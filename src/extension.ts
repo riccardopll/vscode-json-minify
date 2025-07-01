@@ -1,26 +1,53 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "json-minify" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('json-minify.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from JSON Minify!');
-	});
-
-	context.subscriptions.push(disposable);
+  const disposable = vscode.commands.registerCommand(
+    "json-minify.minify",
+    () => {
+      minifyJsonInActiveEditor();
+    }
+  );
+  context.subscriptions.push(disposable);
 }
 
-// This method is called when your extension is deactivated
+function minifyJsonInActiveEditor(): void {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    return;
+  }
+  const document = editor.document;
+  if (document.languageId !== "json" && document.languageId !== "jsonc") {
+    return;
+  }
+  const text = document.getText();
+  const cleanedText =
+    document.languageId === "jsonc" ? stripJsonComments(text) : text;
+  const parsedJson = safeParseJson(cleanedText);
+  if (parsedJson.error) {
+    return;
+  }
+  const minifiedJson = JSON.stringify(parsedJson.data);
+  const fullRange = new vscode.Range(
+    document.positionAt(0),
+    document.positionAt(text.length)
+  );
+  editor.edit((editBuilder) => {
+    editBuilder.replace(fullRange, minifiedJson);
+  });
+}
+
+function safeParseJson(text: string) {
+  try {
+    return { data: JSON.parse(text) };
+  } catch (error) {
+    return { data: null, error: (error as Error).message };
+  }
+}
+
+function stripJsonComments(text: string): string {
+  text = text.replace(/\/\/.*$/gm, "");
+  text = text.replace(/\/\*[\s\S]*?\*\//g, "");
+  return text;
+}
+
 export function deactivate() {}
