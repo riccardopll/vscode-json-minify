@@ -2,7 +2,7 @@
   "name": "json-minify",
   "displayName": "JSON Minify",
   "version": "0.0.1",
-  "description": "Minify JSON files in VS Code with a simple command",
+  "description": "",
   "categories": [
     "Formatters"
   ],
