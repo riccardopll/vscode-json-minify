@@ -1,0 +1,12 @@
+{
+  // This is a single-line comment
+  "name": "test",
+  "version": "1.0.0" /* multi-line
+  comment here */,
+  "description": "A test JSONC file",
+  "nested": {
+    // Another comment
+    "array": [1, 2, 3],
+    "boolean": true
+  }
+}

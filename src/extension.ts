@@ -1,53 +1,96 @@
 import * as vscode from "vscode";
 
 export function activate(context: vscode.ExtensionContext) {
-  const disposable = vscode.commands.registerCommand(
+  const minify = vscode.commands.registerCommand(
     "json-minify.minify",
-    () => {
-      minifyJsonInActiveEditor();
-    }
+    minifyJsonInActiveEditor
   );
-  context.subscriptions.push(disposable);
+  const stringify = vscode.commands.registerCommand(
+    "json-minify.stringify",
+    stringifyJsonInActiveEditor
+  );
+  const deserialize = vscode.commands.registerCommand(
+    "json-minify.deserialize",
+    deserializeJsonInActiveEditor
+  );
+  context.subscriptions.push(minify, stringify, deserialize);
 }
 
-function minifyJsonInActiveEditor(): void {
+function minifyJsonInActiveEditor() {
+  const { editor, selection, json, error } = getJsonSelection();
+  if (error !== undefined) {
+    return;
+  }
+  const minifiedJson = JSON.stringify(json);
+  editor.edit((editBuilder: vscode.TextEditorEdit) => {
+    editBuilder.replace(selection, minifiedJson);
+  });
+}
+
+function stringifyJsonInActiveEditor() {
+  const { editor, selection, json, error } = getJsonSelection();
+  if (error !== undefined) {
+    return;
+  }
+  const stringifiedJson = JSON.stringify(JSON.stringify(json));
+  editor.edit((editBuilder) => {
+    editBuilder.replace(selection, stringifiedJson);
+  });
+}
+
+function deserializeJsonInActiveEditor() {
+  const { editor, selection, json: firstParse, error } = getJsonSelection();
+  if (error !== undefined) {
+    return;
+  }
+  // The json should be a stringified JSON
+  if (typeof firstParse !== "string") {
+    return;
+  }
+  const secondParse = safeParseJson(firstParse);
+  if (secondParse.error) {
+    return;
+  }
+  const deserializedJson = JSON.stringify(secondParse.data);
+  editor.edit((editBuilder) => {
+    editBuilder.replace(selection, deserializedJson);
+  });
+}
+
+function getJsonSelection() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    return;
+    return { error: "No active editor" };
   }
-  const document = editor.document;
-  if (document.languageId !== "json" && document.languageId !== "jsonc") {
-    return;
-  }
-  const text = document.getText();
-  const cleanedText =
-    document.languageId === "jsonc" ? stripJsonComments(text) : text;
+  const selection = editor.selection.isEmpty
+    ? new vscode.Selection(
+        editor.document.positionAt(0),
+        editor.document.positionAt(editor.document.getText().length)
+      )
+    : editor.selection;
+  const text = editor.document.getText(selection);
+  const cleanedText = stripJsonComments(text);
   const parsedJson = safeParseJson(cleanedText);
   if (parsedJson.error) {
-    return;
+    return { error: parsedJson.error };
   }
-  const minifiedJson = JSON.stringify(parsedJson.data);
-  const fullRange = new vscode.Range(
-    document.positionAt(0),
-    document.positionAt(text.length)
-  );
-  editor.edit((editBuilder) => {
-    editBuilder.replace(fullRange, minifiedJson);
-  });
+  return {
+    editor,
+    selection,
+    json: parsedJson.data,
+  };
 }
 
 function safeParseJson(text: string) {
   try {
     return { data: JSON.parse(text) };
   } catch (error) {
-    return { data: null, error: (error as Error).message };
+    return { error: (error as Error).message };
   }
 }
 
-function stripJsonComments(text: string): string {
-  text = text.replace(/\/\/.*$/gm, "");
-  text = text.replace(/\/\*[\s\S]*?\*\//g, "");
-  return text;
+function stripJsonComments(text: string) {
+  return text.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
 }
 
 export function deactivate() {}

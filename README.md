@@ -1,3 +1,3 @@
 # JSON Minify
 
-A simple VS Code extension that minifies JSON files with a single command.
+A VS Code extension that provides JSON manipulation commands.

@@ -1,8 +1,8 @@
 {
   "name": "json-minify",
-  "displayName": "JSON Minify",
+  "displayName": "JSON Tools",
   "version": "0.0.1",
-  "description": "",
+  "description": "A VS Code extension that provides JSON manipulation commands.",
   "categories": [
     "Formatters"
   ],
@@ -10,7 +10,10 @@
     "json",
     "minify",
     "formatter",
-    "compress"
+    "compress",
+    "stringify",
+    "deserialize",
+    "parse"
   ],
   "repository": {
     "type": "git",
@@ -23,7 +26,7 @@
   "scripts": {
     "check-types": "tsc --noEmit",
     "compile": "npm run check-types && npm run lint && node esbuild.js",
-    "compile-tests": "tsc -p . --outDir out",
+    "compile-tests": "tsc -p . --outDir out && cp -r src/test/resources out/test/",
     "lint": "eslint src",
     "package": "npm run check-types && npm run lint && node esbuild.js --production",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
@@ -32,7 +35,7 @@
     "vsce:publish": "vsce publish",
     "vscode:prepublish": "npm run package",
     "watch": "npm-run-all -p watch:*",
-    "watch-tests": "tsc -p . -w --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out & cp -r src/test/resources out/test/",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc --noEmit --watch --project tsconfig.json"
   },
@@ -41,6 +44,14 @@
       {
         "command": "json-minify.minify",
         "title": "JSON: Minify"
+      },
+      {
+        "command": "json-minify.stringify",
+        "title": "JSON: Stringify"
+      },
+      {
+        "command": "json-minify.deserialize",
+        "title": "JSON: Deserialize"
       }
     ]
   },
