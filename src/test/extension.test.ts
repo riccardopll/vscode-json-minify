@@ -188,4 +188,36 @@ suite("JSON Tools Test Suite", () => {
       "Invalid JSON should not be modified when stringifying"
     );
   });
+
+  test("Minify JSON with stringified content", async () => {
+    const jsonContent = await loadTestFile("valid_with_stringified.json");
+    const expectedMinified =
+      '{"name":"test","version":"1.0.0","description":"A test JSON file","nested":{"array":[1,2,3],"boolean":true,"null":null},"stringified":"{\\"name\\":\\"test\\",\\"version\\":\\"1.0.0\\",\\"description\\":\\"A test JSON file\\",\\"url\\":\\"https://example.com/api/test\\",\\"nested\\":{\\"array\\":[1,2,3],\\"boolean\\":true,\\"null\\":null}}"}';
+    const result = await executeCommandOnSelection(
+      jsonContent,
+      "json",
+      "json-minify.minify"
+    );
+    assert.strictEqual(
+      result,
+      expectedMinified,
+      "JSON with stringified content should be minified correctly"
+    );
+  });
+
+  test("Stringify JSON with stringified content", async () => {
+    const jsonContent = await loadTestFile("valid_with_stringified.json");
+    const expectedStringified =
+      '"{\\"name\\":\\"test\\",\\"version\\":\\"1.0.0\\",\\"description\\":\\"A test JSON file\\",\\"nested\\":{\\"array\\":[1,2,3],\\"boolean\\":true,\\"null\\":null},\\"stringified\\":\\"{\\\\\\"name\\\\\\":\\\\\\"test\\\\\\",\\\\\\"version\\\\\\":\\\\\\"1.0.0\\\\\\",\\\\\\"description\\\\\\":\\\\\\"A test JSON file\\\\\\",\\\\\\"url\\\\\\":\\\\\\"https://example.com/api/test\\\\\\",\\\\\\"nested\\\\\\":{\\\\\\"array\\\\\\":[1,2,3],\\\\\\"boolean\\\\\\":true,\\\\\\"null\\\\\\":null}}\\"}"';
+    const result = await executeCommandOnSelection(
+      jsonContent,
+      "json",
+      "json-minify.stringify"
+    );
+    assert.strictEqual(
+      result,
+      expectedStringified,
+      "JSON with stringified content should be stringified correctly"
+    );
+  });
 });

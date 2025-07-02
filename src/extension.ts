@@ -43,7 +43,7 @@ function deserializeJsonInActiveEditor() {
   if (error !== undefined) {
     return;
   }
-  // The json should be a stringified JSON
+  // should be a stringified JSON
   if (typeof firstParse !== "string") {
     return;
   }
@@ -90,7 +90,16 @@ function safeParseJson(text: string) {
 }
 
 function stripJsonComments(text: string) {
-  return text.replace(/\/\/.*$/gm, "").replace(/\/\*[\s\S]*?\*\//g, "");
+  return text.replace(
+    /"(?:[^"\\]|\\.)*"|\/\/.*$|\/\*[\s\S]*?\*\//gm,
+    (match) => {
+      // ignore matches that are inside quotes
+      if (match.startsWith('"')) {
+        return match;
+      }
+      return "";
+    }
+  );
 }
 
 export function deactivate() {}

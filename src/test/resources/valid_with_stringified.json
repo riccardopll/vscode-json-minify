@@ -1,0 +1,11 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "A test JSON file",
+  "nested": {
+    "array": [1, 2, 3],
+    "boolean": true,
+    "null": null
+  },
+  "stringified": "{\"name\":\"test\",\"version\":\"1.0.0\",\"description\":\"A test JSON file\",\"url\":\"https://example.com/api/test\",\"nested\":{\"array\":[1,2,3],\"boolean\":true,\"null\":null}}"
+}
