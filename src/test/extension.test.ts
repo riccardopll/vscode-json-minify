@@ -28,17 +28,13 @@ suite('JSON Tools Test Suite', () => {
     const jsonContent = await loadTestFile('valid.json');
     const expectedMinified =
       '{"name":"test","version":"1.0.0","description":"A test JSON file","nested":{"array":[1,2,3],"boolean":true,"null":null}}';
-    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-minify.minify');
+    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-tools.minify');
     assert.strictEqual(result, expectedMinified, 'JSON should be minified correctly');
   });
 
   test('Handle invalid JSON gracefully', async () => {
     const invalidJsonContent = await loadTestFile('invalid.json');
-    const result = await executeCommandOnSelection(
-      invalidJsonContent,
-      'json',
-      'json-minify.minify'
-    );
+    const result = await executeCommandOnSelection(invalidJsonContent, 'json', 'json-tools.minify');
     assert.strictEqual(result, invalidJsonContent, 'Invalid JSON should not be modified');
   });
 
@@ -47,14 +43,14 @@ suite('JSON Tools Test Suite', () => {
     const result = await executeCommandOnSelection(
       emptyJsonContent.trim(),
       'json',
-      'json-minify.minify'
+      'json-tools.minify'
     );
     assert.strictEqual(result, '{}', 'Empty JSON object should remain as {}');
   });
 
   test('Handle non-JSON file', async () => {
     const textContent = 'This is not a JSON file';
-    const result = await executeCommandOnSelection(textContent, 'plaintext', 'json-minify.minify');
+    const result = await executeCommandOnSelection(textContent, 'plaintext', 'json-tools.minify');
     assert.strictEqual(result, textContent, 'Non-JSON file should not be modified');
   });
 
@@ -62,7 +58,7 @@ suite('JSON Tools Test Suite', () => {
     const jsoncContent = await loadTestFile('valid.jsonc');
     const expectedMinified =
       '{"name":"test","version":"1.0.0","description":"A test JSONC file","nested":{"array":[1,2,3],"boolean":true}}';
-    const result = await executeCommandOnSelection(jsoncContent, 'jsonc', 'json-minify.minify');
+    const result = await executeCommandOnSelection(jsoncContent, 'jsonc', 'json-tools.minify');
     assert.strictEqual(
       result,
       expectedMinified,
@@ -74,7 +70,7 @@ suite('JSON Tools Test Suite', () => {
     const jsonContent = await loadTestFile('valid.json');
     const expectedStringified =
       '"{\\"name\\":\\"test\\",\\"version\\":\\"1.0.0\\",\\"description\\":\\"A test JSON file\\",\\"nested\\":{\\"array\\":[1,2,3],\\"boolean\\":true,\\"null\\":null}}"';
-    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-minify.stringify');
+    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-tools.stringify');
     assert.strictEqual(result, expectedStringified, 'JSON should be stringified correctly');
   });
 
@@ -82,7 +78,7 @@ suite('JSON Tools Test Suite', () => {
     const jsoncContent = await loadTestFile('valid.jsonc');
     const expectedStringified =
       '"{\\"name\\":\\"test\\",\\"version\\":\\"1.0.0\\",\\"description\\":\\"A test JSONC file\\",\\"nested\\":{\\"array\\":[1,2,3],\\"boolean\\":true}}"';
-    const result = await executeCommandOnSelection(jsoncContent, 'jsonc', 'json-minify.stringify');
+    const result = await executeCommandOnSelection(jsoncContent, 'jsonc', 'json-tools.stringify');
     assert.strictEqual(
       result,
       expectedStringified,
@@ -96,7 +92,7 @@ suite('JSON Tools Test Suite', () => {
     const result = await executeCommandOnSelection(
       emptyJsonContent.trim(),
       'json',
-      'json-minify.stringify'
+      'json-tools.stringify'
     );
     assert.strictEqual(result, expectedStringified, 'Empty JSON should be stringified correctly');
   });
@@ -107,7 +103,7 @@ suite('JSON Tools Test Suite', () => {
     const result = await executeCommandOnSelection(
       stringifiedJson,
       'json',
-      'json-minify.deserialize'
+      'json-tools.deserialize'
     );
     assert.strictEqual(
       result,
@@ -121,7 +117,7 @@ suite('JSON Tools Test Suite', () => {
     const result = await executeCommandOnSelection(
       invalidStringifiedJson,
       'json',
-      'json-minify.deserialize'
+      'json-tools.deserialize'
     );
     assert.strictEqual(
       result,
@@ -135,7 +131,7 @@ suite('JSON Tools Test Suite', () => {
     const result = await executeCommandOnSelection(
       invalidJsonContent,
       'json',
-      'json-minify.stringify'
+      'json-tools.stringify'
     );
     assert.strictEqual(
       result,
@@ -148,7 +144,7 @@ suite('JSON Tools Test Suite', () => {
     const jsonContent = await loadTestFile('valid_with_stringified.json');
     const expectedMinified =
       '{"name":"test","version":"1.0.0","description":"A test JSON file","nested":{"array":[1,2,3],"boolean":true,"null":null},"stringified":"{\\"name\\":\\"test\\",\\"version\\":\\"1.0.0\\",\\"description\\":\\"A test JSON file\\",\\"url\\":\\"https://example.com/api/test\\",\\"nested\\":{\\"array\\":[1,2,3],\\"boolean\\":true,\\"null\\":null}}"}';
-    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-minify.minify');
+    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-tools.minify');
     assert.strictEqual(
       result,
       expectedMinified,
@@ -160,7 +156,7 @@ suite('JSON Tools Test Suite', () => {
     const jsonContent = await loadTestFile('valid_with_stringified.json');
     const expectedStringified =
       '"{\\"name\\":\\"test\\",\\"version\\":\\"1.0.0\\",\\"description\\":\\"A test JSON file\\",\\"nested\\":{\\"array\\":[1,2,3],\\"boolean\\":true,\\"null\\":null},\\"stringified\\":\\"{\\\\\\"name\\\\\\":\\\\\\"test\\\\\\",\\\\\\"version\\\\\\":\\\\\\"1.0.0\\\\\\",\\\\\\"description\\\\\\":\\\\\\"A test JSON file\\\\\\",\\\\\\"url\\\\\\":\\\\\\"https://example.com/api/test\\\\\\",\\\\\\"nested\\\\\\":{\\\\\\"array\\\\\\":[1,2,3],\\\\\\"boolean\\\\\\":true,\\\\\\"null\\\\\\":null}}\\"}"';
-    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-minify.stringify');
+    const result = await executeCommandOnSelection(jsonContent, 'json', 'json-tools.stringify');
     assert.strictEqual(
       result,
       expectedStringified,

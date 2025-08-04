@@ -1,13 +1,13 @@
 import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-  const minify = vscode.commands.registerCommand('json-minify.minify', minifyJsonInActiveEditor);
+  const minify = vscode.commands.registerCommand('json-tools.minify', minifyJsonInActiveEditor);
   const stringify = vscode.commands.registerCommand(
-    'json-minify.stringify',
+    'json-tools.stringify',
     stringifyJsonInActiveEditor
   );
   const deserialize = vscode.commands.registerCommand(
-    'json-minify.deserialize',
+    'json-tools.deserialize',
     deserializeJsonInActiveEditor
   );
   context.subscriptions.push(minify, stringify, deserialize);
