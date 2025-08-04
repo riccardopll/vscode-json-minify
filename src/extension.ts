@@ -1,16 +1,13 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
 export function activate(context: vscode.ExtensionContext) {
-  const minify = vscode.commands.registerCommand(
-    "json-minify.minify",
-    minifyJsonInActiveEditor
-  );
+  const minify = vscode.commands.registerCommand('json-minify.minify', minifyJsonInActiveEditor);
   const stringify = vscode.commands.registerCommand(
-    "json-minify.stringify",
+    'json-minify.stringify',
     stringifyJsonInActiveEditor
   );
   const deserialize = vscode.commands.registerCommand(
-    "json-minify.deserialize",
+    'json-minify.deserialize',
     deserializeJsonInActiveEditor
   );
   context.subscriptions.push(minify, stringify, deserialize);
@@ -44,7 +41,7 @@ function deserializeJsonInActiveEditor() {
     return;
   }
   // should be a stringified JSON
-  if (typeof firstParse !== "string") {
+  if (typeof firstParse !== 'string') {
     return;
   }
   const secondParse = safeParseJson(firstParse);
@@ -60,7 +57,7 @@ function deserializeJsonInActiveEditor() {
 function getJsonSelection() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    return { error: "No active editor" };
+    return { error: 'No active editor' };
   }
   const selection = editor.selection.isEmpty
     ? new vscode.Selection(
@@ -90,16 +87,15 @@ function safeParseJson(text: string) {
 }
 
 function stripJsonComments(text: string) {
-  return text.replace(
-    /"(?:[^"\\]|\\.)*"|\/\/.*$|\/\*[\s\S]*?\*\//gm,
-    (match) => {
-      // ignore matches that are inside quotes
-      if (match.startsWith('"')) {
-        return match;
-      }
-      return "";
+  const result = text.replace(/"(?:[^"\\]|\\.)*"|\/\/.*$|\/\*[\s\S]*?\*\//gm, (match) => {
+    // ignore matches that are inside quotes
+    if (match.startsWith('"')) {
+      return match;
     }
-  );
+    return '';
+  });
+  // clean up trailing commas before closing brackets/braces (JSONC support)
+  return result.replace(/,(\s*[}\]])/g, '$1');
 }
 
 export function deactivate() {}

@@ -27,7 +27,7 @@
     "check-types": "tsc --noEmit",
     "compile": "npm run check-types && npm run lint && node esbuild.js",
     "compile-tests": "tsc -p . --outDir out && cp -r src/test/resources out/test/",
-    "lint": "eslint src",
+    "lint": "eslint src --fix && prettier --write .",
     "package": "npm run check-types && npm run lint && node esbuild.js --production",
     "pretest": "npm run compile-tests && npm run compile && npm run lint",
     "test": "vscode-test",
@@ -67,7 +67,10 @@
     "@vscode/vsce": "^3.6.0",
     "esbuild": "^0.25.3",
     "eslint": "^9.25.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.3",
     "npm-run-all": "^4.1.5",
+    "prettier": "^3.6.2",
     "typescript": "^5.8.3"
   },
   "engines": {

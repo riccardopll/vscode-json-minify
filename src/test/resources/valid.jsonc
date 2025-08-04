@@ -7,6 +7,6 @@
   "nested": {
     // Another comment
     "array": [1, 2, 3],
-    "boolean": true
-  }
+    "boolean": true,
+  },
 }
