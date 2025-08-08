@@ -32,7 +32,7 @@ jobs:
 
       - name: Set version from run number (no git tag)
         run: |
-          node -e "const fs=require('fs');const pkg=require('./package.json');const [maj,min]=pkg.version.split('.');pkg.version=`${maj}.${min}.${process.env.GITHUB_RUN_NUMBER}`;fs.writeFileSync('package.json', JSON.stringify(pkg,null,2)+"\n");"
+          node -e 'const fs=require("fs"); const pkg=require("./package.json"); const parts=(pkg.version||"0.0.0").split("."); const maj=parts[0]||"0"; const min=parts[1]||"0"; pkg.version=[maj,min,process.env.GITHUB_RUN_NUMBER].join("."); fs.writeFileSync("package.json", JSON.stringify(pkg,null,2)+"\n");'
           echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
 
       - name: Package extension (.vsix)
