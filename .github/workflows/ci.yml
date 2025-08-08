@@ -33,11 +33,12 @@ jobs:
 
       - name: Set version from run number (no git tag)
         run: |
-          # Extract major.minor from current package.json using Node (no heredoc)
-          BASE_MAJOR_MINOR=$(node -p 'const v=require("./package.json").version||"0.0.0"; const a=v.split("."); console.log((a[0]||"0")+"."+(a[1]||"0"))')
-          # Set version to major.minor.<run_number> without creating a git tag or commit
-          npm version "${BASE_MAJOR_MINOR}.${GITHUB_RUN_NUMBER}" --no-git-tag-version
-          echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+          : ${GITHUB_RUN_NUMBER:?GITHUB_RUN_NUMBER is not set}
+          # Compute major.minor.<run_number> robustly via Node
+          VERSION=$(node -p 'const v=require("./package.json").version||"0.0.0"; const a=String(v).split("."); const M=a[0]||"0"; const m=a[1]||"0"; `${M}.${m}.${process.env.GITHUB_RUN_NUMBER}`')
+          # Write version without creating git tags or commits
+          npm pkg set version="$VERSION"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Package extension (.vsix)
         run: npx vsce package
