@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: publish-main
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    name: Publish VSIX to VSCE and Open VSX
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    env:
+      VSCE_PAT: ${{ secrets.VSCE_PAT }}
+      OVSX_PAT: ${{ secrets.OVSX_PAT }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set version from run number (no git tag)
+        run: |
+          node -e "const fs=require('fs');const pkg=require('./package.json');const [maj,min]=pkg.version.split('.');pkg.version=`${maj}.${min}.${process.env.GITHUB_RUN_NUMBER}`;fs.writeFileSync('package.json', JSON.stringify(pkg,null,2)+"\n");"
+          echo "VERSION=$(node -p \"require('./package.json').version\")" >> $GITHUB_ENV
+
+      - name: Package extension (.vsix)
+        run: npx vsce package
+
+      - name: Locate VSIX
+        id: vsix
+        run: |
+          VSIX_FILE=$(ls *.vsix)
+          echo "vsix=${VSIX_FILE}" >> $GITHUB_OUTPUT
+
+      - name: Publish to VS Code Marketplace (VSCE)
+        if: env.VSCE_PAT != ''
+        run: npx vsce publish --packagePath "${{ steps.vsix.outputs.vsix }}" -p "$VSCE_PAT"
+
+      - name: Publish to Open VSX Registry (OVSX)
+        if: env.OVSX_PAT != ''
+        run: npx ovsx publish "${{ steps.vsix.outputs.vsix }}" -p "$OVSX_PAT"
+
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: extension-${{ env.VERSION }}
+          path: ${{ steps.vsix.outputs.vsix }}

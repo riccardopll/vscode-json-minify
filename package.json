@@ -33,6 +33,7 @@
     "test": "vscode-test",
     "vsce:package": "vsce package",
     "vsce:publish": "vsce publish",
+    "ovsx:publish": "dotenv -e .env -- npm run package && dotenv -e .env -- ovsx publish",
     "vscode:prepublish": "npm run package",
     "watch": "npm-run-all -p watch:*",
     "watch-tests": "tsc -p . -w --outDir out & cp -r src/test/resources out/test/",
@@ -69,8 +70,10 @@
     "eslint": "^9.32.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.3",
+    "dotenv-cli": "^7.4.1",
     "npm-check-updates": "^18.0.2",
     "npm-run-all": "^4.1.5",
+    "ovsx": "^0.9.5",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
   },
